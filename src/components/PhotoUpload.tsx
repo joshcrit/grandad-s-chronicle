@@ -1,16 +1,17 @@
 import { useState, useCallback } from "react";
-import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { Upload, X, Image as ImageIcon, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface PhotoFile {
+interface MediaFile {
   file: File;
   preview: string;
   caption: string;
+  type: 'image' | 'video';
 }
 
 interface PhotoUploadProps {
-  photos: PhotoFile[];
-  onChange: (photos: PhotoFile[]) => void;
+  photos: MediaFile[];
+  onChange: (photos: MediaFile[]) => void;
   maxPhotos?: number;
   maxSizeMB?: number;
 }
@@ -19,7 +20,7 @@ export function PhotoUpload({
   photos,
   onChange,
   maxPhotos = 10,
-  maxSizeMB = 20,
+  maxSizeMB = 100, // Increased for videos
 }: PhotoUploadProps) {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,27 +30,30 @@ export function PhotoUpload({
       if (!files) return;
       setError(null);
 
-      const validFiles: PhotoFile[] = [];
+      const validFiles: MediaFile[] = [];
       const maxBytes = maxSizeMB * 1024 * 1024;
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
-        // Validate file type
-        if (!file.type.startsWith("image/")) {
-          setError("Please upload only image files");
+        // Validate file type (images or videos)
+        const isImage = file.type.startsWith("image/");
+        const isVideo = file.type.startsWith("video/");
+        
+        if (!isImage && !isVideo) {
+          setError("Please upload only image or video files");
           continue;
         }
 
         // Validate file size
         if (file.size > maxBytes) {
-          setError(`Each photo must be under ${maxSizeMB}MB`);
+          setError(`Each file must be under ${maxSizeMB}MB`);
           continue;
         }
 
-        // Check max photos limit
+        // Check max files limit
         if (photos.length + validFiles.length >= maxPhotos) {
-          setError(`Maximum ${maxPhotos} photos allowed`);
+          setError(`Maximum ${maxPhotos} files allowed`);
           break;
         }
 
@@ -57,6 +61,7 @@ export function PhotoUpload({
           file,
           preview: URL.createObjectURL(file),
           caption: "",
+          type: isImage ? 'image' : 'video',
         });
       }
 
@@ -118,7 +123,7 @@ export function PhotoUpload({
       >
         <input
           type="file"
-          accept="image/*"
+          accept="image/*,video/*"
           multiple
           onChange={(e) => handleFiles(e.target.files)}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -130,10 +135,10 @@ export function PhotoUpload({
           </div>
           <div>
             <p className="font-medium text-foreground">
-              Drop photos here or click to upload
+              Drop photos or videos here or click to upload
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              Up to {maxPhotos} photos, {maxSizeMB}MB each
+              Up to {maxPhotos} files, {maxSizeMB}MB each
             </p>
           </div>
         </div>
@@ -153,17 +158,34 @@ export function PhotoUpload({
               className="group relative photo-frame animate-scale-in"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className="aspect-square relative overflow-hidden">
-                <img
-                  src={photo.preview}
-                  alt={`Upload ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
+              <div className="aspect-square relative overflow-hidden bg-muted">
+                {photo.type === 'image' ? (
+                  <img
+                    src={photo.preview}
+                    alt={`Upload ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <video
+                    src={photo.preview}
+                    className="w-full h-full object-cover"
+                    controls={false}
+                    muted
+                  />
+                )}
+                <div className="absolute top-2 left-2">
+                  {photo.type === 'video' && (
+                    <div className="px-2 py-1 bg-foreground/80 text-background text-xs rounded flex items-center gap-1">
+                      <Video className="w-3 h-3" />
+                      Video
+                    </div>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={() => removePhoto(index)}
                   className="absolute top-2 right-2 w-7 h-7 rounded-full bg-foreground/80 text-background flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Remove photo"
+                  aria-label="Remove file"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -184,7 +206,7 @@ export function PhotoUpload({
             <label className="aspect-square border-2 border-dashed border-border rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-accent/50 hover:bg-muted/30 transition-all">
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,video/*"
                 multiple
                 onChange={(e) => handleFiles(e.target.files)}
                 className="hidden"

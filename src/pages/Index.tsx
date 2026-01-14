@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Heart, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { HeroCarousel } from "@/components/HeroCarousel";
 
 const Index = () => {
   const { data: settings } = useQuery({
@@ -16,15 +17,18 @@ const Index = () => {
     },
   });
 
-  const siteTitle = settings?.site_title || "In Loving Memory";
+  const siteTitle = settings?.site_title || "In Loving Memory - Bill Godfrey";
   const introText = settings?.intro_text || 
-    "Share your cherished memories and photos to celebrate a beautiful life.";
+    "Share your memories and photos to celebrate an Incredible life.";
   const submissionsOpen = settings?.submissions_open ?? true;
 
   return (
-    <div className="min-h-screen memorial-gradient">
+    <div className="min-h-screen memorial-gradient relative">
+      {/* Photo Carousel Background */}
+      <HeroCarousel />
+      
       {/* Hero Section */}
-      <header className="relative">
+      <header className="relative z-10">
         <div className="container max-w-4xl mx-auto px-4 pt-16 pb-12 sm:pt-24 sm:pb-20">
           <div className="text-center animate-fade-in">
             {/* Decorative Element */}
@@ -35,7 +39,7 @@ const Index = () => {
             </div>
 
             {/* Title */}
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground tracking-tight mb-6">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-white tracking-tight mb-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
               {siteTitle}
             </h1>
 
@@ -43,7 +47,7 @@ const Index = () => {
             <div className="gold-divider mb-6" />
 
             {/* Intro */}
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
+            <p className="text-lg sm:text-xl text-white leading-relaxed mb-10 max-w-2xl mx-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
               {introText}
             </p>
 
@@ -68,15 +72,15 @@ const Index = () => {
       </header>
 
       {/* Info Section */}
-      <section className="pb-16 sm:pb-24">
+      <section className="pb-16 sm:pb-24 relative z-10">
         <div className="container max-w-3xl mx-auto px-4">
           <div className="memorial-card p-8 sm:p-10 text-center animate-fade-in" style={{ animationDelay: "200ms" }}>
             <h2 className="font-serif text-2xl sm:text-3xl text-foreground mb-4">
-              Celebrating a Life Well Lived
+              Celebrating a life well lived.
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-6">
-              We invite you to share your favorite memories, stories, and photos. 
-              Your contributions will be compiled into a beautiful keepsake for the family.
+              We invite you to share your favorite memories, stories, photos and videos of Bill, Dad, Grandpa, Father Godfrey or however he was known to you. 
+              Your contributions will be compiled into a beautiful bank of memories so that we can never forget him.
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-2">
@@ -85,7 +89,7 @@ const Index = () => {
               </span>
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-accent" />
-                Upload photos
+                Upload photos & videos
               </span>
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-accent" />
@@ -97,19 +101,14 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-8">
-        <div className="container max-w-4xl mx-auto px-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-            <p>A private memorial for family and friends</p>
-            <div className="flex gap-4">
-              <Link to="/privacy" className="hover:text-foreground transition-colors">
-                Privacy
-              </Link>
-              <Link to="/gallery" className="hover:text-foreground transition-colors">
-                View Memories
-              </Link>
-            </div>
-          </div>
+      <footer className="border-t border-border/50 py-8 relative z-10">
+        <div className="container max-w-4xl mx-auto px-4 text-center">
+          <Link 
+            to="/privacy" 
+            className="inline-flex items-center px-4 py-2 bg-white/90 backdrop-blur-sm rounded-lg text-black hover:bg-white transition-colors text-sm"
+          >
+            Privacy Notice
+          </Link>
         </div>
       </footer>
     </div>

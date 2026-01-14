@@ -15,11 +15,13 @@ import {
   X,
   Trash2,
   Edit2,
-  Loader2
+  Loader2,
+  LayoutGrid
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase, getPhotoUrl, deletePhoto } from "@/lib/supabase";
 import { toast } from "sonner";
+import { HeroCarouselAdmin } from "@/components/HeroCarouselAdmin";
 import {
   Dialog,
   DialogContent,
@@ -43,6 +45,7 @@ const Admin = () => {
   const [statusFilter, setStatusFilter] = useState<SubmissionStatus | "all">("all");
   const [isEditingBody, setIsEditingBody] = useState(false);
   const [editedBody, setEditedBody] = useState("");
+  const [activeTab, setActiveTab] = useState<"submissions" | "carousel">("submissions");
 
   // Check auth
   useEffect(() => {
@@ -239,9 +242,43 @@ const Admin = () => {
           ))}
         </div>
 
-        {/* Export Button */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="font-serif text-xl text-foreground">Submissions</h2>
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6 border-b border-border">
+          <button
+            onClick={() => setActiveTab("submissions")}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === "submissions"
+                ? "text-foreground border-b-2 border-accent"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <FileText className="w-4 h-4 inline mr-2" />
+            Submissions
+          </button>
+          <button
+            onClick={() => setActiveTab("carousel")}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === "carousel"
+                ? "text-foreground border-b-2 border-accent"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <LayoutGrid className="w-4 h-4 inline mr-2" />
+            Hero Carousel
+          </button>
+        </div>
+
+        {/* Carousel Management */}
+        {activeTab === "carousel" && (
+          <HeroCarouselAdmin />
+        )}
+
+        {/* Submissions */}
+        {activeTab === "submissions" && (
+          <>
+            {/* Export Button */}
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="font-serif text-xl text-foreground">Submissions</h2>
           <DropdownMenu>
             <DropdownMenuTrigger className="btn-memorial text-sm py-2">
               <Download className="w-4 h-4" />
@@ -259,10 +296,10 @@ const Admin = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+            </div>
 
-        {/* Submissions List */}
-        {isLoading ? (
+                {/* Submissions List */}
+            {isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <div key={i} className="memorial-card p-6">
@@ -350,6 +387,8 @@ const Admin = () => {
               Submissions will appear here as they come in.
             </p>
           </div>
+        )}
+          </>
         )}
       </main>
 
@@ -442,18 +481,27 @@ const Admin = () => {
                 {selectedSubmission.photos?.length > 0 && (
                   <div>
                     <h4 className="font-medium text-foreground mb-3">
-                      Photos ({selectedSubmission.photos.length})
+                      Photos & Videos ({selectedSubmission.photos.length})
                     </h4>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                       {selectedSubmission.photos
                         .sort((a: any, b: any) => a.order_index - b.order_index)
                         .map((photo: any) => (
                           <div key={photo.id} className="photo-frame">
-                            <img
-                              src={getPhotoUrl(photo.storage_path)}
-                              alt={photo.caption || "Photo"}
-                              className="w-full aspect-square object-cover"
-                            />
+                            {photo.media_type === 'video' ? (
+                              <video
+                                src={getPhotoUrl(photo.storage_path)}
+                                className="w-full aspect-square object-cover"
+                                controls
+                                playsInline
+                              />
+                            ) : (
+                              <img
+                                src={getPhotoUrl(photo.storage_path)}
+                                alt={photo.caption || "Photo"}
+                                className="w-full aspect-square object-cover"
+                              />
+                            )}
                             {photo.caption && (
                               <p className="p-2 text-xs text-muted-foreground">
                                 {photo.caption}

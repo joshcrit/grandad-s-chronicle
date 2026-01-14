@@ -109,12 +109,21 @@ const Gallery = () => {
                       .map((photo: any) => (
                         <div key={photo.id} className="photo-frame">
                           <div className="aspect-square">
-                            <img
-                              src={getPhotoUrl(photo.storage_path)}
-                              alt={photo.caption || "Memory photo"}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
+                            {photo.media_type === 'video' ? (
+                              <video
+                                src={getPhotoUrl(photo.storage_path)}
+                                className="w-full h-full object-cover"
+                                controls
+                                playsInline
+                              />
+                            ) : (
+                              <img
+                                src={getPhotoUrl(photo.storage_path)}
+                                alt={photo.caption || "Memory photo"}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            )}
                           </div>
                           {photo.caption && (
                             <p className="p-2 text-xs text-muted-foreground text-center">

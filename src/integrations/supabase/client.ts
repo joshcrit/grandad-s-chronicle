@@ -9,6 +9,10 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
   console.error('Missing Supabase environment variables. Please check your .env file.');
   console.error('Required variables: VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY');
+  console.error('Current values:', {
+    url: SUPABASE_URL ? 'Set' : 'Missing',
+    key: SUPABASE_PUBLISHABLE_KEY ? 'Set (length: ' + SUPABASE_PUBLISHABLE_KEY.length + ')' : 'Missing'
+  });
 }
 
 // Import the supabase client like this:
@@ -22,6 +26,12 @@ export const supabase = createClient<Database>(
       storage: localStorage,
       persistSession: true,
       autoRefreshToken: true,
-    }
+      detectSessionInUrl: false,
+    },
+    global: {
+      headers: {
+        'apikey': SUPABASE_PUBLISHABLE_KEY || '',
+      },
+    },
   }
 );

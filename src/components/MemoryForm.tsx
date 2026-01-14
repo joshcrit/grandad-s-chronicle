@@ -5,10 +5,11 @@ import { PhotoUpload } from "./PhotoUpload";
 import { supabase, uploadPhoto } from "@/lib/supabase";
 import { toast } from "sonner";
 
-interface PhotoFile {
+interface MediaFile {
   file: File;
   preview: string;
   caption: string;
+  type: 'image' | 'video';
 }
 
 const MAX_BODY_CHARS = 2000;
@@ -23,7 +24,7 @@ export function MemoryForm() {
   const [email, setEmail] = useState("");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const [photos, setPhotos] = useState<PhotoFile[]>([]);
+  const [photos, setPhotos] = useState<MediaFile[]>([]);
   const [consent, setConsent] = useState(false);
   
   // Honeypot for spam
@@ -67,22 +68,23 @@ export function MemoryForm() {
 
       if (submissionError) throw submissionError;
 
-      // Upload photos
+      // Upload photos and videos
       for (let i = 0; i < photos.length; i++) {
-        const photo = photos[i];
-        const storagePath = await uploadPhoto(photo.file, submission.id);
+        const media = photos[i];
+        const storagePath = await uploadPhoto(media.file, submission.id);
         
-        const { error: photoError } = await supabase
+        const { error: mediaError } = await supabase
           .from("photos")
           .insert({
             submission_id: submission.id,
             storage_path: storagePath,
-            caption: photo.caption.trim() || null,
+            caption: media.caption.trim() || null,
             order_index: i,
+            media_type: media.type,
           });
 
-        if (photoError) {
-          console.error("Photo upload error:", photoError);
+        if (mediaError) {
+          console.error("Media upload error:", mediaError);
         }
       }
 
@@ -96,8 +98,22 @@ export function MemoryForm() {
         message: error?.message,
         details: error?.details,
         hint: error?.hint,
-        code: error?.code
+        code: error?.code,
+        status: error?.status,
+        statusCode: error?.statusCode
       });
+      
+      // Log the full error object for debugging
+      console.error("Complete error object:", error);
+      
+      // Check if it's a 401 error specifically
+      if (error?.status === 401 || error?.statusCode === 401 || error?.code === 'PGRST301') {
+        console.error("401 Unauthorized Error - Possible causes:");
+        console.error("1. Wrong API key (using service_role instead of anon key)");
+        console.error("2. RLS policies not allowing anonymous inserts");
+        console.error("3. API key not set in .env file");
+        console.error("Check your .env file has VITE_SUPABASE_PUBLISHABLE_KEY set to the 'anon public' key from Supabase Settings → API");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -220,11 +236,11 @@ export function MemoryForm() {
 
       <div className="gold-divider" />
 
-      {/* Photos Section */}
+      {/* Media Section */}
       <div className="space-y-4">
-        <h3 className="font-serif text-xl text-foreground">Photos</h3>
+        <h3 className="font-serif text-xl text-foreground">Photos & Videos</h3>
         <p className="text-sm text-muted-foreground">
-          Add up to 10 photos to accompany your memory. These are optional.
+          Add up to 10 photos or videos to accompany your memory. These are optional.
         </p>
         <PhotoUpload photos={photos} onChange={setPhotos} />
       </div>
@@ -246,7 +262,7 @@ export function MemoryForm() {
             </div>
           </div>
           <span className="text-sm text-foreground leading-relaxed">
-            I confirm I have permission to share these photos and memories, and I understand they may be included in a printed memorial compilation. <span className="text-destructive">*</span>
+            I accept the privacy terms <span className="text-destructive">*</span>
           </span>
         </label>
 

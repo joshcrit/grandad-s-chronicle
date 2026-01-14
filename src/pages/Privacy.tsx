@@ -31,48 +31,58 @@ const Privacy = () => {
           <div className="gold-divider" />
         </div>
 
-        <div className="memorial-card p-8 sm:p-10 prose prose-neutral max-w-none">
-          <h2 className="font-serif text-xl text-foreground mt-0">What we collect</h2>
-          <p className="text-muted-foreground">
-            This memorial site collects only the information you choose to share:
-          </p>
-          <ul className="text-muted-foreground">
-            <li>Your name and relationship (optional)</li>
-            <li>Your email address (optional, for confirmation only)</li>
-            <li>Your written memories</li>
-            <li>Photos you upload</li>
-          </ul>
+        <div className="space-y-6">
+          <div className="memorial-card p-6 sm:p-8 prose prose-neutral max-w-none">
+            <h2 className="font-serif text-xl text-foreground mt-0">What we collect</h2>
+            <p className="text-muted-foreground">
+              This memorial site collects only the information you choose to share:
+            </p>
+            <ul className="text-muted-foreground">
+              <li>Your name and relationship (optional)</li>
+              <li>Your email address (optional, for confirmation only)</li>
+              <li>Your written memories</li>
+              <li>Photos you upload</li>
+            </ul>
+          </div>
 
-          <h2 className="font-serif text-xl text-foreground">How we use it</h2>
-          <p className="text-muted-foreground">
-            All submissions are used exclusively for creating a memorial compilation 
-            for the family. This may include:
-          </p>
-          <ul className="text-muted-foreground">
-            <li>A printed memory book for the funeral service</li>
-            <li>A digital keepsake for family members</li>
-            <li>Display during memorial services (with your permission)</li>
-          </ul>
+          <div className="memorial-card p-6 sm:p-8 prose prose-neutral max-w-none">
+            <h2 className="font-serif text-xl text-foreground">How we use it</h2>
+            <p className="text-muted-foreground">
+              All submissions are used exclusively for creating a memorial compilation 
+              for the family. This may include:
+            </p>
+            <ul className="text-muted-foreground">
+              <li>A printed memory book for the funeral service</li>
+              <li>A digital keepsake for family members</li>
+              <li>Display during memorial services </li>
+            </ul>
+          </div>
 
-          <h2 className="font-serif text-xl text-foreground">Who can see it</h2>
-          <p className="text-muted-foreground">
-            This is a private memorial. Submissions are reviewed by the family 
-            administrator before being included. Your contact information is never 
-            shared publicly.
-          </p>
+          <div className="memorial-card p-6 sm:p-8 prose prose-neutral max-w-none">
+            <h2 className="font-serif text-xl text-foreground">Who can see it</h2>
+            <p className="text-muted-foreground">
+              This is a private memorial. Submissions are reviewed by the family 
+              administrator before being included. Your contact information is never 
+              shared publicly.
+            </p>
+          </div>
 
-          <h2 className="font-serif text-xl text-foreground">Data retention</h2>
-          <p className="text-muted-foreground">
-            Photos and memories are kept for as long as the family wishes to maintain 
-            this memorial. You may request removal of your submission by contacting 
-            the family directly.
-          </p>
+          <div className="memorial-card p-6 sm:p-8 prose prose-neutral max-w-none">
+            <h2 className="font-serif text-xl text-foreground">Data retention</h2>
+            <p className="text-muted-foreground">
+              Photos and memories are kept for as long as the family wishes to maintain 
+              this memorial. You may request removal of your submission by contacting 
+              the family directly.
+            </p>
+          </div>
 
-          <h2 className="font-serif text-xl text-foreground">Questions?</h2>
-          <p className="text-muted-foreground">
-            If you have any questions about your privacy or how your submissions 
-            are used, please reach out to the family directly.
-          </p>
+          <div className="memorial-card p-6 sm:p-8 prose prose-neutral max-w-none">
+            <h2 className="font-serif text-xl text-foreground">Questions?</h2>
+            <p className="text-muted-foreground">
+              If you have any questions about your privacy or how your submissions 
+              are used, please reach out to the family directly.
+            </p>
+          </div>
         </div>
       </main>
 
