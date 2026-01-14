@@ -87,9 +87,17 @@ export function MemoryForm() {
       }
 
       navigate("/thank-you");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Submission error:", error);
-      toast.error("Something went wrong. Please try again.");
+      // Show more specific error message
+      const errorMessage = error?.message || "Something went wrong. Please try again.";
+      toast.error(errorMessage);
+      console.error("Full error details:", {
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code
+      });
     } finally {
       setIsSubmitting(false);
     }
