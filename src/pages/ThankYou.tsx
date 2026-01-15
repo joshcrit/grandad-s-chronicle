@@ -3,9 +3,17 @@ import { Heart, Home, Plus } from "lucide-react";
 
 const ThankYou = () => {
   return (
-    <div className="min-h-screen memorial-gradient flex items-center justify-center px-4">
-      <div className="max-w-lg w-full text-center">
-        <div className="memorial-card p-10 sm:p-12 animate-scale-in">
+    <div className="min-h-screen memorial-gradient relative flex items-center justify-center px-4">
+      {/* Background Image */}
+      <div 
+        className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(/carousel/4dee5fb7-b588-4b52-b2ce-14ca5d63d327.JPG)'
+        }}
+      />
+      
+      <div className="max-w-lg w-full text-center relative z-10">
+        <div className="p-10 sm:p-12 animate-scale-in">
           {/* Icon */}
           <div className="flex justify-center mb-8">
             <div className="w-20 h-20 rounded-full bg-success/10 flex items-center justify-center animate-fade-in" style={{ animationDelay: "200ms" }}>
@@ -14,14 +22,14 @@ const ThankYou = () => {
           </div>
 
           {/* Message */}
-          <h1 className="font-serif text-3xl sm:text-4xl text-foreground mb-4 animate-fade-in" style={{ animationDelay: "300ms" }}>
+          <h1 className="font-serif text-3xl sm:text-4xl text-white mb-4 animate-fade-in drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" style={{ animationDelay: "300ms" }}>
             Thank You
           </h1>
           
           <div className="gold-divider mb-6" />
           
-          <p className="text-muted-foreground leading-relaxed mb-8 animate-fade-in" style={{ animationDelay: "400ms" }}>
-            Your memory has been received and will be reviewed shortly. 
+          <p className="text-white leading-relaxed mb-8 animate-fade-in drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" style={{ animationDelay: "400ms" }}>
+            Your memories are greatly appreciated. 
             Thank you for taking the time to share something so meaningful.
           </p>
 
@@ -31,7 +39,7 @@ const ThankYou = () => {
               <Home className="w-4 h-4" />
               Return Home
             </Link>
-            <Link to="/add" className="btn-memorial-outline">
+            <Link to="/add" className="btn-memorial">
               <Plus className="w-4 h-4" />
               Add Another Memory
             </Link>
@@ -39,8 +47,8 @@ const ThankYou = () => {
         </div>
 
         {/* Subtle footer */}
-        <p className="text-sm text-muted-foreground mt-8 animate-fade-in" style={{ animationDelay: "600ms" }}>
-          If you provided an email, you'll receive a confirmation shortly.
+        <p className="text-sm text-white mt-8 animate-fade-in drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" style={{ animationDelay: "600ms" }}>
+          If you provided an email, we would love to keep in touch.
         </p>
       </div>
     </div>

@@ -40,14 +40,25 @@ export function PhotoUpload({
         const isImage = file.type.startsWith("image/");
         const isVideo = file.type.startsWith("video/");
         
-        if (!isImage && !isVideo) {
-          setError("Please upload only image or video files");
+        // Fallback: check file extension if MIME type is missing
+        const fileExt = file.name.split(".").pop()?.toLowerCase();
+        const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+        const videoExts = ['mp4', 'mpeg', 'mov', 'avi', 'webm', 'ogg', 'wmv', 'flv', 'mkv'];
+        const isImageByExt = fileExt && imageExts.includes(fileExt);
+        const isVideoByExt = fileExt && videoExts.includes(fileExt);
+        
+        if (!isImage && !isVideo && !isImageByExt && !isVideoByExt) {
+          setError(`${file.name} is not a valid image or video file (type: ${file.type || 'unknown'})`);
           continue;
         }
+        
+        // Use extension check if MIME type is missing
+        const finalType = isImage || isImageByExt ? 'image' : 'video';
 
         // Validate file size
         if (file.size > maxBytes) {
-          setError(`Each file must be under ${maxSizeMB}MB`);
+          const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+          setError(`${file.name} is too large (${fileSizeMB}MB). Maximum size is ${maxSizeMB}MB`);
           continue;
         }
 
@@ -61,7 +72,7 @@ export function PhotoUpload({
           file,
           preview: URL.createObjectURL(file),
           caption: "",
-          type: isImage ? 'image' : 'video',
+          type: finalType,
         });
       }
 
@@ -123,7 +134,7 @@ export function PhotoUpload({
       >
         <input
           type="file"
-          accept="image/*,video/*"
+          accept="image/*,video/mp4,video/mpeg,video/quicktime,video/x-msvideo,video/webm,video/ogg"
           multiple
           onChange={(e) => handleFiles(e.target.files)}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -206,7 +217,7 @@ export function PhotoUpload({
             <label className="aspect-square border-2 border-dashed border-border rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-accent/50 hover:bg-muted/30 transition-all">
               <input
                 type="file"
-                accept="image/*,video/*"
+                accept="image/*,video/mp4,video/mpeg,video/quicktime,video/x-msvideo,video/webm,video/ogg"
                 multiple
                 onChange={(e) => handleFiles(e.target.files)}
                 className="hidden"
