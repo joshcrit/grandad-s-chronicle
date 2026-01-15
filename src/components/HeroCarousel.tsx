@@ -2,7 +2,11 @@ import { useEffect, useRef } from "react";
 
 // Local carousel photos - using actual filenames from public/carousel/
 const CAROUSEL_PHOTOS = [
-  // Row 1 (10 photos)
+  // Row 1 (11 photos: 4 new + 7 from old Row 1)
+  "/carousel/0c0a293e-e445-47aa-be4e-331d88ee4f79.JPG",
+  "/carousel/455996f0-7703-4e77-949a-989fb0a56765.JPG",
+  "/carousel/f7e02a12-b227-4c40-8226-e4a8986c10c8.JPG",
+  "/carousel/fd489572-cfd7-443c-b530-348fad12690a.JPG",
   "/carousel/0ce68e02-0457-42f7-b14b-27bdfc44016f.JPG",
   "/carousel/0d7b7232-1578-4989-883b-9a2bb3587c73.JPG",
   "/carousel/12cff05d-31bf-4d05-a47e-f3a5ead332c3.JPG",
@@ -10,10 +14,8 @@ const CAROUSEL_PHOTOS = [
   "/carousel/240c99cc-4dac-4d59-a076-a37512e53322.JPG",
   "/carousel/29ed3173-c630-4a8a-9ef5-18664d74e00f.JPG",
   "/carousel/31b56225-911a-49ab-98ff-6955395d4c09.JPG",
+  // Row 2 (11 photos: 1 from old Row 1 + 10 from old Row 2)
   "/carousel/38552523-69d0-45b1-a1fd-4e1b5926521c.JPG",
-  "/carousel/39e96f73-c8da-4247-b0c4-cfdbc153bc2d.JPG",
-  "/carousel/3e6c7189-4a60-4f3c-96ac-4fa6b621a9ec.JPG",
-  // Row 2 (10 photos)
   "/carousel/401e735c-849e-4b29-affd-f6c454b2e474.JPG",
   "/carousel/4dee5fb7-b588-4b52-b2ce-14ca5d63d327.JPG",
   "/carousel/5078076f-e30c-459e-9ba8-0d9b21b78f83.JPG",
@@ -24,7 +26,8 @@ const CAROUSEL_PHOTOS = [
   "/carousel/7ac67a35-229c-45c6-b3b1-1cbe4be4bd3e.JPG",
   "/carousel/7e9d9efe-6584-4c2c-a962-916ba920847a.JPG",
   "/carousel/84440dd2-620c-4f67-9c77-069a215f264c.JPG",
-  // Row 3 (10 photos)
+  // Row 3 (11 photos: 1 from old Row 1 + 10 from old Row 3)
+  "/carousel/39e96f73-c8da-4247-b0c4-cfdbc153bc2d.JPG",
   "/carousel/8500bc6d-9960-47bd-93e4-a7afe54e5567.JPG",
   "/carousel/86bc46c6-43b6-4b56-a900-b7b6ea014d62.JPG",
   "/carousel/94045466-537c-4057-a909-537fa285bc8a.JPG",
@@ -35,7 +38,8 @@ const CAROUSEL_PHOTOS = [
   "/carousel/ae9185eb-4f72-4c13-ae4f-25e430abadaf.JPG",
   "/carousel/b7f58a99-65b1-4d88-830c-db1aa659aeca.JPG",
   "/carousel/bf254490-b472-40f5-825c-12ff54d5a04e.JPG",
-  // Row 4 (10 photos)
+  // Row 4 (11 photos: 1 from old Row 1 + 10 from old Row 4)
+  "/carousel/3e6c7189-4a60-4f3c-96ac-4fa6b621a9ec.JPG",
   "/carousel/cb7e34c4-fe98-4a85-b510-0559a6dfe290.JPG",
   "/carousel/cbbeb7ea-4102-4931-a4a2-ae4ef85d0ed9.JPG",
   "/carousel/ce66b38b-b42b-4b80-be9e-124c4532d115.JPG",
@@ -49,12 +53,12 @@ const CAROUSEL_PHOTOS = [
 ];
 
 export function HeroCarousel() {
-  // Split photos into 4 rows of 10
+  // Split photos into 4 rows of 11
   const rows = [
-    CAROUSEL_PHOTOS.slice(0, 10),   // Row 1
-    CAROUSEL_PHOTOS.slice(10, 20),  // Row 2
-    CAROUSEL_PHOTOS.slice(20, 30),  // Row 3
-    CAROUSEL_PHOTOS.slice(30, 40),  // Row 4
+    CAROUSEL_PHOTOS.slice(0, 11),   // Row 1
+    CAROUSEL_PHOTOS.slice(11, 22),  // Row 2
+    CAROUSEL_PHOTOS.slice(22, 33),  // Row 3
+    CAROUSEL_PHOTOS.slice(33, 44),  // Row 4
   ];
 
   // Check if we have any photos
