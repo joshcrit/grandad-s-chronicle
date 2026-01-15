@@ -2,8 +2,38 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { MemoryForm } from "@/components/MemoryForm";
 import { StaticPhotoBackground } from "@/components/StaticPhotoBackground";
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 const AddMemory = () => {
+  // Test Supabase connection on mount
+  useEffect(() => {
+    const testConnection = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("site_settings")
+          .select("site_title")
+          .limit(1);
+        
+        if (error) {
+          console.error("Supabase connection test failed:", error);
+          console.error("Error details:", {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint
+          });
+        } else {
+          console.log("✅ Supabase connection test successful");
+        }
+      } catch (err) {
+        console.error("Supabase connection test error:", err);
+      }
+    };
+    
+    testConnection();
+  }, []);
+
   return (
     <div className="min-h-screen memorial-gradient relative">
       {/* Static Photo Background */}
@@ -32,7 +62,7 @@ const AddMemory = () => {
           <div className="inline-block px-6 py-3 mb-10 bg-white/90 backdrop-blur-sm rounded-lg max-w-lg mx-auto">
             <p className="text-black">
               Take your time to share your thoughts, stories, and photos. 
-              Every memory helps paint a picture of a life well lived.
+              Every memory ensures that Bill will live on in our hearts.
             </p>
           </div>
         </div>

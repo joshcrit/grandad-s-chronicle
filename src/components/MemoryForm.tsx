@@ -90,29 +90,39 @@ export function MemoryForm() {
 
       navigate("/thank-you");
     } catch (error: any) {
-      console.error("Submission error:", error);
-      // Show more specific error message
-      const errorMessage = error?.message || "Something went wrong. Please try again.";
-      toast.error(errorMessage);
-      console.error("Full error details:", {
-        message: error?.message,
-        details: error?.details,
-        hint: error?.hint,
-        code: error?.code,
-        status: error?.status,
-        statusCode: error?.statusCode
-      });
+      // Extract error details
+      const errorMessage = error?.message || error?.error?.message || "Something went wrong. Please try again.";
+      const errorCode = error?.code || error?.error?.code;
+      const errorStatus = error?.status || error?.statusCode || error?.error?.status;
+      const errorDetails = error?.details || error?.error?.details;
+      const errorHint = error?.hint || error?.error?.hint;
       
-      // Log the full error object for debugging
-      console.error("Complete error object:", error);
+      // Log detailed error information
+      console.error("=== SUBMISSION ERROR ===");
+      console.error("Message:", errorMessage);
+      console.error("Code:", errorCode);
+      console.error("Status:", errorStatus);
+      console.error("Details:", errorDetails);
+      console.error("Hint:", errorHint);
+      console.error("Full error:", JSON.stringify(error, null, 2));
+      
+      // Show user-friendly error
+      toast.error(errorMessage);
       
       // Check if it's a 401 error specifically
-      if (error?.status === 401 || error?.statusCode === 401 || error?.code === 'PGRST301') {
-        console.error("401 Unauthorized Error - Possible causes:");
-        console.error("1. Wrong API key (using service_role instead of anon key)");
-        console.error("2. RLS policies not allowing anonymous inserts");
-        console.error("3. API key not set in .env file");
-        console.error("Check your .env file has VITE_SUPABASE_PUBLISHABLE_KEY set to the 'anon public' key from Supabase Settings → API");
+      if (errorStatus === 401 || errorCode === 'PGRST301' || errorCode === '42501') {
+        console.error("=== 401/RLS ERROR ===");
+        console.error("Possible causes:");
+        console.error("1. RLS policies not configured correctly");
+        console.error("2. Wrong API key in environment variables");
+        console.error("3. Using service_role key instead of anon public key");
+        console.error("4. Dev server needs restart after policy changes");
+        console.error("");
+        console.error("SOLUTION:");
+        console.error("1. Restart your dev server (stop and start npm run dev)");
+        console.error("2. Hard refresh browser (Cmd+Shift+R or Ctrl+Shift+R)");
+        console.error("3. Check browser console for Supabase client initialization logs");
+        console.error("4. Verify API key starts with 'eyJ' (JWT) or 'sb_publishable_' (new format)");
       }
     } finally {
       setIsSubmitting(false);

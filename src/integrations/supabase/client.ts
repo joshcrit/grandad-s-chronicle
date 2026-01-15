@@ -13,6 +13,33 @@ if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
     url: SUPABASE_URL ? 'Set' : 'Missing',
     key: SUPABASE_PUBLISHABLE_KEY ? 'Set (length: ' + SUPABASE_PUBLISHABLE_KEY.length + ')' : 'Missing'
   });
+} else {
+  // Log key info for debugging (first 20 chars only for security)
+  const keyPreview = SUPABASE_PUBLISHABLE_KEY.substring(0, 20);
+  const keyLength = SUPABASE_PUBLISHABLE_KEY.length;
+  const isAnonKey = SUPABASE_PUBLISHABLE_KEY.startsWith('eyJ') || SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
+  const isServiceRole = SUPABASE_PUBLISHABLE_KEY.includes('service_role') || SUPABASE_PUBLISHABLE_KEY.startsWith('sb_service_');
+  
+  console.log('Supabase client initialized:', {
+    url: SUPABASE_URL,
+    keyPreview: keyPreview + '...',
+    keyLength: keyLength,
+    isAnonKey: isAnonKey,
+    isServiceRole: isServiceRole,
+    keyFormat: SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_') ? 'new format (sb_publishable_)' : 
+               SUPABASE_PUBLISHABLE_KEY.startsWith('eyJ') ? 'old format (JWT)' : 'unknown'
+  });
+  
+  // Warn if it looks like service_role key
+  if (isServiceRole) {
+    console.error('⚠️ WARNING: This looks like a service_role key! Use the anon public key instead.');
+    console.error('Get the correct key from: Supabase Dashboard → Settings → API → anon public');
+  }
+  
+  // Confirm if it's the correct anon key
+  if (isAnonKey && !isServiceRole) {
+    console.log('✅ Using correct anon public key');
+  }
 }
 
 // Import the supabase client like this:
