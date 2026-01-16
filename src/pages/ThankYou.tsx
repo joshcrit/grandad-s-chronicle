@@ -31,7 +31,7 @@ const ThankYou = () => {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/" className="btn-memorial-outline">
               <Home className="w-4 h-4" />
-              Return to memorial
+              Return to home page
             </Link>
             <Link to="/add" className="btn-memorial">
               <Plus className="w-4 h-4" />

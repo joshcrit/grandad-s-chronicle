@@ -8,91 +8,105 @@ const Index = () => {
   const { data: settings } = useQuery({
     queryKey: ["site-settings"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("site_settings")
-        .select("*")
-        .single();
+      const { data, error } = await supabase.from("site_settings").select("*").single();
       if (error) throw error;
       return data;
     },
   });
 
-  // Keep settings-driven values available, but we are enforcing real hierarchy in the hero.
+  // Keep settings wiring, but stop using the generic AI-ish defaults in the hero.
+  // (You can later manage these fields in Supabase if you want.)
   const submissionsOpen = settings?.submissions_open ?? true;
 
   return (
     <div className="min-h-screen memorial-gradient relative">
-      <HeroCarousel />
-
-      {/* Hero Section */}
-      <header className="relative z-10 overflow-hidden">
-        {/* Global scrim over the moving photo field */}
-        <div aria-hidden="true" className="hero-scrim" />
-
-        <div className="container mx-auto max-w-6xl px-4 pt-16 pb-14 sm:pt-24 sm:pb-20">
-          <div className="relative grid md:grid-cols-[minmax(0,44rem)_1fr] md:gap-x-16 items-center animate-fade-in">
-            {/* Local veil behind just the copy */}
-            <div aria-hidden="true" className="hero-veil" />
-
-            <div className="relative">
-              {/* Bilingual / human naming line (NOT a tag cloud) */}
-              <p className="hero-eyebrow">
-                Bishop Bill Godfrey <span className="sep" /> Obispo Godfrey <span className="sep" /> Grandpa
-              </p>
-
-              {/* Use "Bill Godfrey" as the headline */}
-              <h1 className="hero-title">Bill Godfrey</h1>
-
-              {/* Make the subtitle human, not résumé */}
-              <p className="hero-subtitle">
-                A father, grandpa, bishop — and a friend to many across the world.
-              </p>
-
-              <div className="gold-divider hero-divider" />
-
-              {/* Present tense, invitational, specific */}
-              <p className="hero-intro">
-                This is a place to gather stories, photographs, and moments — so we can remember Bill together,
-                in the voices of everyone who knew him.
-              </p>
-
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                {submissionsOpen ? (
-                  <>
-                    <Link to="/add" className="hero-cta">
-                      Share a memory
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                    <Link to="/gallery" className="hero-secondary">
-                      Read shared memories
-                    </Link>
-                  </>
-                ) : (
-                  <p className="hero-intro text-white/70">
-                    Submissions are now closed. Thank you for every memory shared.
+      {/* HERO */}
+      <header className="hero-shell">
+        <div className="hero-overlay">
+          <div className="container mx-auto max-w-6xl px-4">
+            <div className="hero-split">
+              <div className="hero-text">
+                <div className="hero-content">
+                  {/* Eyebrow: stop listing "roles" like tags. One bilingual-aware line, human tone. */}
+                  <p className="hero-eyebrow-new">
+                    Bishop Bill Godfrey <span aria-hidden="true">·</span> Obispo William <span aria-hidden="true">·</span> Grandpa
                   </p>
-                )}
+
+                  <h1 className="hero-title-new">Bill Godfrey</h1>
+
+                  {/* One line. No "retired". No impersonality. */}
+                  <p className="hero-subtitle-new">
+                    Bishop of Peru &amp; Uruguay — priest, father, grandfather.
+                  </p>
+
+                  {/* One sentence max. Present tense. */}
+                  <p className="hero-intro-new">
+                    A place for stories and photographs — so we can remember Bill together.
+                  </p>
+
+                  <div className="hero-actions">
+                    {submissionsOpen ? (
+                      <>
+                        <Link to="/add" className="hero-cta-primary">
+                          Share a memory
+                          <ArrowRight className="w-4 h-4" />
+                        </Link>
+                        <Link to="/gallery" className="hero-cta-secondary">
+                          Read shared memories
+                        </Link>
+                      </>
+                    ) : (
+                      <p className="hero-intro-new hero-note">
+                        Submissions are closed. Thank you for the memories shared.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Replace "Privacy & sharing" page link with one calm disclosure line */}
+                  <p className="hero-disclosure">
+                    Memories are reviewed by family before appearing on the site.
+                  </p>
+                </div>
+              </div>
+              <div className="hero-media">
+                <HeroCarousel />
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Paper Section */}
-      <section id="memories" className="paper-section">
-        <div className="container mx-auto max-w-5xl px-4 py-14 sm:py-18">
-          <h2 className="paper-title">Celebrating a life well lived.</h2>
-          <p className="paper-body">
-            Add a story, a photograph, or a short tribute—whether you knew him as Bill, Dad, Grandpa, Father Godfrey, or Obispo Godfrey.
-          </p>
+      {/* TIMELINE STRIP (placeholder, horizontal) */}
+      <section className="timeline-shell" aria-label="Timeline">
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="timeline-header">
+            <h2 className="timeline-title">A life in brief</h2>
+            <p className="timeline-subtitle">
+              We'll add key moments from his life and ministry here.
+            </p>
+          </div>
 
-          <div className="paper-features">
-            <div>Share written memories</div>
-            <div>Upload photos &amp; videos</div>
-            <div>Add personal tributes</div>
+          <div className="timeline-rail" role="list">
+            {[
+              { year: "—", label: "Early life", note: "Placeholder" },
+              { year: "—", label: "Ordination", note: "Placeholder" },
+              { year: "—", label: "Peru & Uruguay", note: "Placeholder" },
+              { year: "—", label: "Friendships & family", note: "Placeholder" },
+              { year: "—", label: "Later years", note: "Placeholder" },
+            ].map((item, i) => (
+              <div className="timeline-item" role="listitem" key={i}>
+                <div className="timeline-dot" aria-hidden="true" />
+                <div className="timeline-year">{item.year}</div>
+                <div className="timeline-label">{item.label}</div>
+                <div className="timeline-note">{item.note}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
+
+      {/* Nothing else on the homepage for now.
+          Keep it restrained: hero + timeline + entry points already live in hero. */}
     </div>
   );
 };

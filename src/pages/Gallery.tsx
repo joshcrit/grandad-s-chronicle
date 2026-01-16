@@ -31,7 +31,7 @@ const Gallery = () => {
         <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="btn-memorial-outline">
             <ArrowLeft className="w-4 h-4" />
-            Return to memorial
+            Return to home page
           </Link>
           <Link to="/add" className="btn-memorial">
             Share a memory
