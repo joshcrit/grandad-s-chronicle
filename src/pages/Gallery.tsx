@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Heart, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase, getPhotoUrl } from "@/lib/supabase";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,13 +10,15 @@ const Gallery = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("submissions")
-        .select(`
+        .select(
+          `
           *,
           photos (*)
-        `)
+        `
+        )
         .eq("status", "approved")
         .order("created_at", { ascending: false });
-      
+
       if (error) throw error;
       return data;
     },
@@ -26,36 +28,33 @@ const Gallery = () => {
     <div className="min-h-screen memorial-gradient">
       {/* Header */}
       <header className="border-b border-border/50">
-        <div className="container max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link 
-            to="/" 
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-          >
+        <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link to="/" className="btn-memorial-outline">
             <ArrowLeft className="w-4 h-4" />
-            Back to Home
+            Return to memorial
           </Link>
-          <Link 
-            to="/add"
-            className="btn-memorial text-sm py-2"
-          >
-            Add a Memory
+          <Link to="/add" className="btn-memorial">
+            Share a memory
           </Link>
         </div>
       </header>
 
       {/* Content */}
-      <main className="container max-w-5xl mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="font-serif text-3xl sm:text-4xl text-foreground mb-4">
-            Shared Memories
+      <main className="container max-w-6xl mx-auto px-4 py-10 sm:py-14">
+        <div className="mb-10 sm:mb-12">
+          <p className="hero-eyebrow text-foreground/70 [text-shadow:none]">
+            Stories and photographs shared by family and friends
+          </p>
+          <h1 className="font-serif text-3xl sm:text-4xl text-foreground mb-3">
+            Shared memories
           </h1>
-          <div className="gold-divider" />
+          <div className="gold-divider !mx-0" />
         </div>
 
         {isLoading ? (
           <div className="grid gap-8 md:grid-cols-2">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="memorial-card p-6">
+              <div key={i} className="memorial-card p-6 sm:p-8">
                 <Skeleton className="h-6 w-3/4 mb-4" />
                 <Skeleton className="h-4 w-1/2 mb-6" />
                 <Skeleton className="h-24 w-full mb-4" />
@@ -66,12 +65,11 @@ const Gallery = () => {
         ) : submissions && submissions.length > 0 ? (
           <div className="grid gap-8 md:grid-cols-2">
             {submissions.map((submission, index) => (
-              <article 
-                key={submission.id} 
+              <article
+                key={submission.id}
                 className="memorial-card p-6 sm:p-8 animate-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
+                style={{ animationDelay: `${index * 80}ms` }}
               >
-                {/* Header */}
                 <header className="mb-4">
                   <h2 className="font-serif text-xl sm:text-2xl text-foreground mb-2">
                     {submission.title}
@@ -82,34 +80,33 @@ const Gallery = () => {
                         <span className="font-medium">{submission.contributor_name}</span>
                       )}
                       {submission.contributor_name && submission.contributor_relationship && " · "}
-                      {submission.contributor_relationship && (
-                        <span>{submission.contributor_relationship}</span>
-                      )}
+                      {submission.contributor_relationship && <span>{submission.contributor_relationship}</span>}
                     </p>
                   )}
                 </header>
 
-                {/* Body */}
-                <div className="gold-divider mb-4" />
+                <div className="gold-divider !mx-0 mb-4" />
+
                 <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap mb-6">
                   {submission.body}
                 </p>
 
-                {/* Photos */}
                 {submission.photos && submission.photos.length > 0 && (
-                  <div className={`grid gap-3 ${
-                    submission.photos.length === 1 
-                      ? "grid-cols-1" 
-                      : submission.photos.length === 2 
-                        ? "grid-cols-2" 
+                  <div
+                    className={`grid gap-3 ${
+                      submission.photos.length === 1
+                        ? "grid-cols-1"
+                        : submission.photos.length === 2
+                        ? "grid-cols-2"
                         : "grid-cols-2 sm:grid-cols-3"
-                  }`}>
+                    }`}
+                  >
                     {submission.photos
                       .sort((a: any, b: any) => a.order_index - b.order_index)
                       .map((photo: any) => (
                         <div key={photo.id} className="photo-frame">
                           <div className="aspect-square">
-                            {photo.media_type === 'video' ? (
+                            {photo.media_type === "video" ? (
                               <video
                                 src={getPhotoUrl(photo.storage_path)}
                                 className="w-full h-full object-cover"
@@ -145,22 +142,24 @@ const Gallery = () => {
               </div>
             </div>
             <h2 className="font-serif text-2xl text-foreground mb-3">
-              No Memories Yet
+              No memories yet
             </h2>
             <p className="text-muted-foreground mb-6">
               Be the first to share a cherished memory.
             </p>
             <Link to="/add" className="btn-memorial">
-              Add the First Memory
+              Share the first memory
             </Link>
           </div>
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border/50 py-6 mt-8">
-        <div className="container max-w-5xl mx-auto px-4 text-center text-sm text-muted-foreground">
+      <footer className="border-t border-border/50 py-6 mt-10">
+        <div className="container max-w-6xl mx-auto px-4 text-sm text-muted-foreground flex items-center justify-between">
           <p>A private memorial for family and friends</p>
+          <Link to="/privacy" className="hover:text-foreground transition-colors">
+            Privacy Notice
+          </Link>
         </div>
       </footer>
     </div>

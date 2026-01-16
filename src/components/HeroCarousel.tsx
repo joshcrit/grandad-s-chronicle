@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 // Local carousel photos - using actual filenames from public/carousel/
 const CAROUSEL_PHOTOS = [
-  // Row 1 (11 photos: 4 new + 7 from old Row 1)
+  // Row 1 (11 photos)
   "/carousel/0c0a293e-e445-47aa-be4e-331d88ee4f79.JPG",
   "/carousel/455996f0-7703-4e77-949a-989fb0a56765.JPG",
   "/carousel/f7e02a12-b227-4c40-8226-e4a8986c10c8.JPG",
@@ -14,7 +14,7 @@ const CAROUSEL_PHOTOS = [
   "/carousel/240c99cc-4dac-4d59-a076-a37512e53322.JPG",
   "/carousel/29ed3173-c630-4a8a-9ef5-18664d74e00f.JPG",
   "/carousel/31b56225-911a-49ab-98ff-6955395d4c09.JPG",
-  // Row 2 (11 photos: 1 from old Row 1 + 10 from old Row 2)
+  // Row 2 (11 photos)
   "/carousel/38552523-69d0-45b1-a1fd-4e1b5926521c.JPG",
   "/carousel/401e735c-849e-4b29-affd-f6c454b2e474.JPG",
   "/carousel/4dee5fb7-b588-4b52-b2ce-14ca5d63d327.JPG",
@@ -26,7 +26,7 @@ const CAROUSEL_PHOTOS = [
   "/carousel/7ac67a35-229c-45c6-b3b1-1cbe4be4bd3e.JPG",
   "/carousel/7e9d9efe-6584-4c2c-a962-916ba920847a.JPG",
   "/carousel/84440dd2-620c-4f67-9c77-069a215f264c.JPG",
-  // Row 3 (11 photos: 1 from old Row 1 + 10 from old Row 3)
+  // Row 3 (11 photos)
   "/carousel/39e96f73-c8da-4247-b0c4-cfdbc153bc2d.JPG",
   "/carousel/8500bc6d-9960-47bd-93e4-a7afe54e5567.JPG",
   "/carousel/86bc46c6-43b6-4b56-a900-b7b6ea014d62.JPG",
@@ -38,7 +38,7 @@ const CAROUSEL_PHOTOS = [
   "/carousel/ae9185eb-4f72-4c13-ae4f-25e430abadaf.JPG",
   "/carousel/b7f58a99-65b1-4d88-830c-db1aa659aeca.JPG",
   "/carousel/bf254490-b472-40f5-825c-12ff54d5a04e.JPG",
-  // Row 4 (11 photos: 1 from old Row 1 + 10 from old Row 4)
+  // Row 4 (11 photos)
   "/carousel/3e6c7189-4a60-4f3c-96ac-4fa6b621a9ec.JPG",
   "/carousel/cb7e34c4-fe98-4a85-b510-0559a6dfe290.JPG",
   "/carousel/cbbeb7ea-4102-4931-a4a2-ae4ef85d0ed9.JPG",
@@ -53,36 +53,31 @@ const CAROUSEL_PHOTOS = [
 ];
 
 export function HeroCarousel() {
-  // Split photos into 4 rows of 11
   const rows = [
-    CAROUSEL_PHOTOS.slice(0, 11),   // Row 1
-    CAROUSEL_PHOTOS.slice(11, 22),  // Row 2
-    CAROUSEL_PHOTOS.slice(22, 33),  // Row 3
-    CAROUSEL_PHOTOS.slice(33, 44),  // Row 4
+    CAROUSEL_PHOTOS.slice(0, 11),
+    CAROUSEL_PHOTOS.slice(11, 22),
+    CAROUSEL_PHOTOS.slice(22, 33),
+    CAROUSEL_PHOTOS.slice(33, 44),
   ];
 
-  // Check if we have any photos
-  const hasPhotos = CAROUSEL_PHOTOS.length > 0;
-
-  if (!hasPhotos) {
-    return null; // Don't show anything if no photos configured
-  }
+  if (CAROUSEL_PHOTOS.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+    <div
+      className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0 photo-carousel"
+      style={{ filter: "saturate(0.98) contrast(0.99) brightness(0.99)" }}
+    >
       <div className="absolute inset-0 flex flex-col">
         {rows.map((rowPhotos, rowIndex) => {
           if (rowPhotos.length === 0) return null;
-          
-          // Duplicate photos for seamless loop
           const duplicatedPhotos = [...rowPhotos, ...rowPhotos];
-          
+
           return (
             <SlidingRow
               key={rowIndex}
               photos={duplicatedPhotos}
               direction="left"
-              speed={100}
+              speed={120}
             />
           );
         })}
@@ -92,9 +87,9 @@ export function HeroCarousel() {
 }
 
 interface SlidingRowProps {
-  photos: string[]; // Array of image paths
+  photos: string[];
   direction: "left" | "right";
-  speed: number; // seconds for one full cycle
+  speed: number;
 }
 
 function SlidingRow({ photos, direction, speed }: SlidingRowProps) {
@@ -104,10 +99,9 @@ function SlidingRow({ photos, direction, speed }: SlidingRowProps) {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Create keyframes dynamically
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     const totalWidth = containerRef.current.scrollWidth / 2;
-    
+
     if (direction === "left") {
       style.textContent = `
         @keyframes ${animationName} {
@@ -123,9 +117,9 @@ function SlidingRow({ photos, direction, speed }: SlidingRowProps) {
         }
       `;
     }
-    
+
     document.head.appendChild(style);
-    
+
     if (containerRef.current) {
       containerRef.current.style.animation = `${animationName} ${speed}s linear infinite`;
     }
@@ -136,28 +130,18 @@ function SlidingRow({ photos, direction, speed }: SlidingRowProps) {
   }, [photos, direction, speed, animationName]);
 
   return (
-    <div className="overflow-hidden flex-1">
-      <div
-        ref={containerRef}
-        className="flex h-full"
-        style={{
-          width: "max-content",
-        }}
-      >
+    <div className="overflow-hidden flex-1 photo-row">
+      <div ref={containerRef} className="flex h-full" style={{ width: "max-content" }}>
         {photos.map((photoPath, index) => (
-          <div
-            key={`${photoPath}-${index}`}
-            className="flex-shrink-0 h-full aspect-square overflow-hidden"
-          >
+          <div key={`${photoPath}-${index}`} className="flex-shrink-0 h-full aspect-square overflow-hidden">
             <img
               src={photoPath}
               alt={`Hero photo ${index + 1}`}
               className="w-full h-full object-cover"
               loading="lazy"
               onError={(e) => {
-                // Fallback if image doesn't load
                 console.error(`Failed to load image: ${photoPath}`);
-                (e.target as HTMLImageElement).style.display = 'none';
+                (e.target as HTMLImageElement).style.display = "none";
               }}
             />
           </div>
