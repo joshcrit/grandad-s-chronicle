@@ -41,7 +41,7 @@ function flattenPhotosFromSubmissions(submissions: SubmissionRow[] | null): Coll
 }
 
 const Gallery = () => {
-  const { data: submissions, isLoading } = useQuery({
+  const { data: submissions, isLoading, error } = useQuery({
     queryKey: ["approved-submissions"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -105,6 +105,16 @@ const Gallery = () => {
               </div>
             ))}
           </div>
+        ) : error ? (
+          <div className="text-center py-16 rounded-lg bg-destructive/10 border border-destructive/20">
+            <p className="font-medium text-destructive mb-2">Could not load memories</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              {(error as Error).message}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Check that Row Level Security allows public read of approved submissions and photos.
+            </p>
+          </div>
         ) : collagePhotos.length > 0 ? (
           <div
             className="columns-2 sm:columns-3 lg:columns-4 gap-4 collage-masonry"
@@ -160,8 +170,11 @@ const Gallery = () => {
             <h2 className="font-serif text-2xl text-foreground mb-3">
               No photos yet
             </h2>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground mb-2">
               Be the first to share a photo or memory.
+            </p>
+            <p className="text-sm text-muted-foreground mb-6">
+              Only approved submissions appear here. Approve them in the Admin area to show them on this page.
             </p>
             <Link to="/add" className="btn-memorial">
               Share the first memory
