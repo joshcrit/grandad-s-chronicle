@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Heart } from "lucide-react";
+import { ArrowLeft, Heart, X, ZoomIn, ZoomOut } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useCallback, useState } from "react";
 import { supabase, getPhotoUrl } from "@/lib/supabase";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -63,6 +64,27 @@ const Gallery = () => {
   });
 
   const collagePhotos = flattenPhotosFromSubmissions(submissions ?? null);
+  const [selectedPhoto, setSelectedPhoto] = useState<CollagePhoto | null>(null);
+  const [zoom, setZoom] = useState(1);
+
+  const closeLightbox = useCallback(() => {
+    setSelectedPhoto(null);
+    setZoom(1);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedPhoto) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+    };
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [selectedPhoto, closeLightbox]);
 
   return (
     <div className="min-h-screen memorial-gradient">
@@ -128,22 +150,35 @@ const Gallery = () => {
                 role="listitem"
               >
                 {photo.media_type === "video" ? (
-                  <div className="aspect-video w-full">
+                  <div
+                    className="aspect-video w-full cursor-pointer"
+                    onClick={() => setSelectedPhoto(photo)}
+                    onKeyDown={(e) => e.key === "Enter" && setSelectedPhoto(photo)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Expand video"
+                  >
                     <video
                       src={getPhotoUrl(photo.storage_path)}
-                      className="w-full h-full object-cover"
-                      controls
+                      className="w-full h-full object-cover pointer-events-none"
                       playsInline
                       preload="metadata"
                     />
                   </div>
                 ) : (
-                  <img
-                    src={getPhotoUrl(photo.storage_path)}
-                    alt={photo.caption || "Memory photo"}
-                    className="w-full h-auto block"
-                    loading="lazy"
-                  />
+                  <button
+                    type="button"
+                    className="w-full text-left focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-t-lg overflow-hidden"
+                    onClick={() => setSelectedPhoto(photo)}
+                    aria-label="Expand photo to view larger"
+                  >
+                    <img
+                      src={getPhotoUrl(photo.storage_path)}
+                      alt={photo.caption || "Memory photo"}
+                      className="w-full h-auto block cursor-zoom-in"
+                      loading="lazy"
+                    />
+                  </button>
                 )}
                 {(photo.caption || photo.submission_title) && (
                   <div className="p-2 sm:p-3 bg-card/80">
@@ -191,6 +226,87 @@ const Gallery = () => {
           </Link>
         </div>
       </footer>
+
+      {/* Lightbox: click to expand, zoom, close */}
+      {selectedPhoto && (
+        <div
+          className="fixed inset-0 z-50 bg-black/95 flex flex-col"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Expanded photo view"
+        >
+          <div className="absolute top-0 right-0 p-4 flex items-center gap-2 z-10">
+            {selectedPhoto.media_type !== "video" && (
+              <div className="flex items-center gap-1 rounded-full bg-white/10 p-1">
+                <button
+                  type="button"
+                  onClick={() => setZoom((z) => Math.max(0.5, z - 0.25))}
+                  className="p-2 text-white hover:bg-white/20 rounded-full transition-colors"
+                  aria-label="Zoom out"
+                >
+                  <ZoomOut className="w-5 h-5" />
+                </button>
+                <span className="text-white text-sm min-w-[3rem] text-center tabular-nums">
+                  {Math.round(zoom * 100)}%
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setZoom((z) => Math.min(3, z + 0.25))}
+                  className="p-2 text-white hover:bg-white/20 rounded-full transition-colors"
+                  aria-label="Zoom in"
+                >
+                  <ZoomIn className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={closeLightbox}
+              className="p-2 text-white hover:bg-white/20 rounded-full transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <div
+            className="flex-1 flex items-center justify-center overflow-auto p-4 pt-16"
+            onClick={closeLightbox}
+          >
+            <div
+              className="flex items-center justify-center min-h-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {selectedPhoto.media_type === "video" ? (
+                <video
+                  src={getPhotoUrl(selectedPhoto.storage_path)}
+                  className="max-w-full max-h-[90vh] w-auto h-auto object-contain"
+                  controls
+                  autoPlay
+                  playsInline
+                />
+              ) : (
+                <img
+                  src={getPhotoUrl(selectedPhoto.storage_path)}
+                  alt={selectedPhoto.caption || "Memory photo"}
+                  className="max-w-full max-h-[90vh] w-auto h-auto object-contain select-none"
+                  style={{ transform: `scale(${zoom})` }}
+                  draggable={false}
+                />
+              )}
+            </div>
+          </div>
+
+          {(selectedPhoto.caption || selectedPhoto.submission_title) && (
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent text-white text-sm text-center">
+              {selectedPhoto.caption && <p className="font-medium">{selectedPhoto.caption}</p>}
+              {selectedPhoto.submission_title && (
+                <p className="text-white/80 text-xs mt-1">From: {selectedPhoto.submission_title}</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
