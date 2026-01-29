@@ -4,6 +4,42 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase, getPhotoUrl } from "@/lib/supabase";
 import { Skeleton } from "@/components/ui/skeleton";
 
+type PhotoRow = {
+  id: string;
+  storage_path: string;
+  caption: string | null;
+  order_index: number;
+  media_type?: string;
+};
+
+type SubmissionRow = {
+  id: string;
+  title: string;
+  created_at: string;
+  photos: PhotoRow[] | null;
+};
+
+type CollagePhoto = PhotoRow & {
+  submission_title: string;
+  submission_created_at: string;
+};
+
+function flattenPhotosFromSubmissions(submissions: SubmissionRow[] | null): CollagePhoto[] {
+  if (!submissions || submissions.length === 0) return [];
+  const flat: CollagePhoto[] = [];
+  for (const sub of submissions) {
+    const photos = (sub.photos || []).sort((a, b) => a.order_index - b.order_index);
+    for (const photo of photos) {
+      flat.push({
+        ...photo,
+        submission_title: sub.title,
+        submission_created_at: sub.created_at,
+      });
+    }
+  }
+  return flat;
+}
+
 const Gallery = () => {
   const { data: submissions, isLoading } = useQuery({
     queryKey: ["approved-submissions"],
@@ -12,7 +48,9 @@ const Gallery = () => {
         .from("submissions")
         .select(
           `
-          *,
+          id,
+          title,
+          created_at,
           photos (*)
         `
         )
@@ -20,9 +58,11 @@ const Gallery = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as SubmissionRow[];
     },
   });
+
+  const collagePhotos = flattenPhotosFromSubmissions(submissions ?? null);
 
   return (
     <div className="min-h-screen memorial-gradient">
@@ -43,95 +83,71 @@ const Gallery = () => {
       <main className="container max-w-6xl mx-auto px-4 py-10 sm:py-14">
         <div className="mb-10 sm:mb-12">
           <p className="hero-eyebrow text-foreground/70 [text-shadow:none]">
-            Stories and photographs shared by family and friends
+            Photos from memories shared by family and friends
           </p>
           <h1 className="font-serif text-3xl sm:text-4xl text-foreground mb-3">
-            Shared memories
+            Read memories
           </h1>
+          <p className="text-muted-foreground mb-2">
+            Scroll down to see more as they are added.
+          </p>
           <div className="gold-divider !mx-0" />
         </div>
 
         {isLoading ? (
-          <div className="grid gap-8 md:grid-cols-2">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="memorial-card p-6 sm:p-8">
-                <Skeleton className="h-6 w-3/4 mb-4" />
-                <Skeleton className="h-4 w-1/2 mb-6" />
-                <Skeleton className="h-24 w-full mb-4" />
-                <Skeleton className="h-40 w-full" />
+          <div className="columns-2 sm:columns-3 lg:columns-4 gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+              <div key={i} className="break-inside-avoid mb-4">
+                <Skeleton
+                  className="w-full rounded-lg"
+                  style={{ height: [180, 220, 260, 200, 240][i % 5] }}
+                />
               </div>
             ))}
           </div>
-        ) : submissions && submissions.length > 0 ? (
-          <div className="grid gap-8 md:grid-cols-2">
-            {submissions.map((submission, index) => (
-              <article
-                key={submission.id}
-                className="memorial-card p-6 sm:p-8 animate-fade-in"
-                style={{ animationDelay: `${index * 80}ms` }}
+        ) : collagePhotos.length > 0 ? (
+          <div
+            className="columns-2 sm:columns-3 lg:columns-4 gap-4 collage-masonry"
+            role="list"
+            aria-label="Photo collage from shared memories"
+          >
+            {collagePhotos.map((photo) => (
+              <div
+                key={photo.id}
+                className="break-inside-avoid mb-4 rounded-lg overflow-hidden bg-muted/50 shadow-sm hover:shadow-md transition-shadow"
+                role="listitem"
               >
-                <header className="mb-4">
-                  <h2 className="font-serif text-xl sm:text-2xl text-foreground mb-2">
-                    {submission.title}
-                  </h2>
-                  {(submission.contributor_name || submission.contributor_relationship) && (
-                    <p className="text-sm text-muted-foreground">
-                      {submission.contributor_name && (
-                        <span className="font-medium">{submission.contributor_name}</span>
-                      )}
-                      {submission.contributor_name && submission.contributor_relationship && " · "}
-                      {submission.contributor_relationship && <span>{submission.contributor_relationship}</span>}
-                    </p>
-                  )}
-                </header>
-
-                <div className="gold-divider !mx-0 mb-4" />
-
-                <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap mb-6">
-                  {submission.body}
-                </p>
-
-                {submission.photos && submission.photos.length > 0 && (
-                  <div
-                    className={`grid gap-3 ${
-                      submission.photos.length === 1
-                        ? "grid-cols-1"
-                        : submission.photos.length === 2
-                        ? "grid-cols-2"
-                        : "grid-cols-2 sm:grid-cols-3"
-                    }`}
-                  >
-                    {submission.photos
-                      .sort((a: any, b: any) => a.order_index - b.order_index)
-                      .map((photo: any) => (
-                        <div key={photo.id} className="photo-frame">
-                          <div className="aspect-square">
-                            {photo.media_type === "video" ? (
-                              <video
-                                src={getPhotoUrl(photo.storage_path)}
-                                className="w-full h-full object-cover"
-                                controls
-                                playsInline
-                              />
-                            ) : (
-                              <img
-                                src={getPhotoUrl(photo.storage_path)}
-                                alt={photo.caption || "Memory photo"}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                            )}
-                          </div>
-                          {photo.caption && (
-                            <p className="p-2 text-xs text-muted-foreground text-center">
-                              {photo.caption}
-                            </p>
-                          )}
-                        </div>
-                      ))}
+                {photo.media_type === "video" ? (
+                  <div className="aspect-video w-full">
+                    <video
+                      src={getPhotoUrl(photo.storage_path)}
+                      className="w-full h-full object-cover"
+                      controls
+                      playsInline
+                      preload="metadata"
+                    />
+                  </div>
+                ) : (
+                  <img
+                    src={getPhotoUrl(photo.storage_path)}
+                    alt={photo.caption || "Memory photo"}
+                    className="w-full h-auto block"
+                    loading="lazy"
+                  />
+                )}
+                {(photo.caption || photo.submission_title) && (
+                  <div className="p-2 sm:p-3 bg-card/80">
+                    {photo.caption && (
+                      <p className="text-sm text-foreground/90">{photo.caption}</p>
+                    )}
+                    {photo.submission_title && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        From: {photo.submission_title}
+                      </p>
+                    )}
                   </div>
                 )}
-              </article>
+              </div>
             ))}
           </div>
         ) : (
@@ -142,10 +158,10 @@ const Gallery = () => {
               </div>
             </div>
             <h2 className="font-serif text-2xl text-foreground mb-3">
-              No memories yet
+              No photos yet
             </h2>
             <p className="text-muted-foreground mb-6">
-              Be the first to share a cherished memory.
+              Be the first to share a photo or memory.
             </p>
             <Link to="/add" className="btn-memorial">
               Share the first memory
