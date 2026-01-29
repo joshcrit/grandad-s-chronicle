@@ -29,7 +29,7 @@ const Index = () => {
                 <div className="hero-content">
                   {/* Eyebrow: stop listing "roles" like tags. One bilingual-aware line, human tone. */}
                   <p className="hero-eyebrow-new">
-                    Bishop Bill Godfrey <span aria-hidden="true">·</span> Obispo William <span aria-hidden="true">·</span> Grandpa
+                    Bishop Bill Godfrey <span aria-hidden="true">·</span> Obispo William <span aria-hidden="true">·</span> Grandpa <span aria-hidden="true">·</span> Dad
                   </p>
 
                   <h1 className="hero-title-new">Bill Godfrey</h1>
