@@ -76,35 +76,7 @@ const Index = () => {
         </div>
       </header>
 
-      {/* TIMELINE STRIP (placeholder, horizontal) */}
-      <section className="timeline-shell" aria-label="Timeline">
-        <div className="container mx-auto max-w-6xl px-4">
-          <div className="timeline-header">
-            <h2 className="timeline-title">A life in brief</h2>
-            <p className="timeline-subtitle">
-              We'll add key moments from his life and ministry here.
-            </p>
-          </div>
-
-          <div className="timeline-rail" role="list">
-            {[
-              { year: "—", label: "Early life", note: "Placeholder" },
-              { year: "—", label: "Ordination", note: "Placeholder" },
-              { year: "—", label: "Peru & Uruguay", note: "Placeholder" },
-              { year: "—", label: "Friendships & family", note: "Placeholder" },
-              { year: "—", label: "Later years", note: "Placeholder" },
-            ].map((item, i) => (
-              <div className="timeline-item" role="listitem" key={i}>
-                <div className="timeline-dot" aria-hidden="true" />
-                <div className="timeline-year">{item.year}</div>
-                <div className="timeline-label">{item.label}</div>
-                <div className="timeline-note">{item.note}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      {/* Timeline hidden for now — add proper timeline info later */}
       {/* Nothing else on the homepage for now.
           Keep it restrained: hero + timeline + entry points already live in hero. */}
     </div>
