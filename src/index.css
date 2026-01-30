@@ -959,18 +959,23 @@
   .timeline-sections {
     display: flex;
     flex-direction: row;
+    flex-wrap: nowrap;
     gap: 0.9rem;
     overflow-x: auto;
+    overflow-y: hidden;
     padding: 0.25rem 0.25rem 0.75rem;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
+    min-height: 0; /* allow flex child to shrink and show scrollbar */
   }
 
   .timeline-section {
     display: flex;
     flex-direction: row;
+    flex-wrap: nowrap;
     gap: 0.9rem;
     flex-shrink: 0;
+    min-width: min-content;
     scroll-snap-align: start;
   }
 
@@ -997,8 +1002,10 @@
   .timeline-entries {
     display: flex;
     flex-direction: row;
+    flex-wrap: nowrap;
     gap: 0.9rem;
     flex-shrink: 0;
+    min-width: min-content;
   }
 
   .timeline-rail {
