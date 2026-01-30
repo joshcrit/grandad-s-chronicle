@@ -956,6 +956,33 @@
     max-width: 46rem;
   }
 
+  .timeline-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .timeline-section {
+    margin-bottom: 0;
+  }
+
+  .timeline-section-title {
+    font-family: "Cormorant Garamond", ui-serif, Georgia, serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+    color: hsl(220 20% 16%);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .timeline-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
   .timeline-rail {
     display: grid;
     grid-auto-flow: column;
@@ -1010,6 +1037,10 @@
     color: hsl(220 12% 32%);
     font-size: 0.98rem;
     line-height: 1.6;
+  }
+
+  .timeline-note:empty {
+    display: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
