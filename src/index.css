@@ -958,42 +958,63 @@
 
   .timeline-sections {
     display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
+    flex-direction: row;
+    gap: 0.9rem;
+    overflow-x: auto;
+    padding: 0.25rem 0.25rem 0.75rem;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
   }
 
   .timeline-section {
-    margin-bottom: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 0.9rem;
+    flex-shrink: 0;
+    scroll-snap-align: start;
   }
 
   .timeline-section-title {
     font-family: "Cormorant Garamond", ui-serif, Georgia, serif;
     font-weight: 600;
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     letter-spacing: -0.01em;
     color: hsl(220 20% 16%);
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+    width: 10rem;
+    min-width: 10rem;
+    padding: 1rem 0.75rem;
+    background: hsl(38 70% 50% / 0.12);
+    border: 1px solid hsl(38 70% 50% / 0.25);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    scroll-snap-align: start;
+    line-height: 1.25;
+    word-wrap: break-word;
   }
 
   .timeline-entries {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 0.9rem;
+    flex-shrink: 0;
   }
 
   .timeline-rail {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(220px, 1fr);
+    display: flex;
+    flex-direction: row;
     gap: 0.9rem;
     overflow-x: auto;
     padding: 0.25rem 0.25rem 0.75rem;
     scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
   }
 
   .timeline-item {
+    flex-shrink: 0;
+    width: 280px;
+    min-width: 280px;
     scroll-snap-align: start;
     background: hsl(40 40% 99%);
     border: 1px solid rgba(0,0,0,0.07);

@@ -82,7 +82,7 @@ const Index = () => {
           <div className="timeline-header">
             <h2 className="timeline-title">Bishop Bill – a life in brief</h2>
             <p className="timeline-subtitle">
-              Harold William Godfrey — from Chesterfield to Peru and back.
+              Harold William Godfrey — from Chesterfield to Peru and back. Scroll across to explore.
             </p>
           </div>
 
