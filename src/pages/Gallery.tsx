@@ -16,6 +16,9 @@ type PhotoRow = {
 type SubmissionRow = {
   id: string;
   title: string;
+  body: string;
+  contributor_name: string | null;
+  contributor_relationship: string | null;
   created_at: string;
   photos: PhotoRow[] | null;
 };
@@ -51,6 +54,9 @@ const Gallery = () => {
           `
           id,
           title,
+          body,
+          contributor_name,
+          contributor_relationship,
           created_at,
           photos (*)
         `
@@ -64,6 +70,8 @@ const Gallery = () => {
   });
 
   const collagePhotos = flattenPhotosFromSubmissions(submissions ?? null);
+  const hasPhotos = collagePhotos.length > 0;
+  const hasSubmissions = !!(submissions && submissions.length > 0);
   const [selectedPhoto, setSelectedPhoto] = useState<CollagePhoto | null>(null);
   const [zoom, setZoom] = useState(1);
 
@@ -137,65 +145,7 @@ const Gallery = () => {
               Check that Row Level Security allows public read of approved submissions and photos.
             </p>
           </div>
-        ) : collagePhotos.length > 0 ? (
-          <div
-            className="columns-2 sm:columns-3 lg:columns-4 gap-4 collage-masonry"
-            role="list"
-            aria-label="Photo collage from shared memories"
-          >
-            {collagePhotos.map((photo) => (
-              <div
-                key={photo.id}
-                className="break-inside-avoid mb-4 rounded-lg overflow-hidden bg-muted/50 shadow-sm hover:shadow-md transition-shadow"
-                role="listitem"
-              >
-                {photo.media_type === "video" ? (
-                  <div
-                    className="aspect-video w-full cursor-pointer"
-                    onClick={() => setSelectedPhoto(photo)}
-                    onKeyDown={(e) => e.key === "Enter" && setSelectedPhoto(photo)}
-                    role="button"
-                    tabIndex={0}
-                    aria-label="Expand video"
-                  >
-                    <video
-                      src={getPhotoUrl(photo.storage_path)}
-                      className="w-full h-full object-cover pointer-events-none"
-                      playsInline
-                      preload="metadata"
-                    />
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    className="w-full text-left focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-t-lg overflow-hidden"
-                    onClick={() => setSelectedPhoto(photo)}
-                    aria-label="Expand photo to view larger"
-                  >
-                    <img
-                      src={getPhotoUrl(photo.storage_path)}
-                      alt={photo.caption || "Memory photo"}
-                      className="w-full h-auto block cursor-zoom-in"
-                      loading="lazy"
-                    />
-                  </button>
-                )}
-                {(photo.caption || photo.submission_title) && (
-                  <div className="p-2 sm:p-3 bg-card/80">
-                    {photo.caption && (
-                      <p className="text-sm text-foreground/90">{photo.caption}</p>
-                    )}
-                    {photo.submission_title && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        From: {photo.submission_title}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
+        ) : !hasPhotos && !hasSubmissions ? (
           <div className="text-center py-16">
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
@@ -203,18 +153,151 @@ const Gallery = () => {
               </div>
             </div>
             <h2 className="font-serif text-2xl text-foreground mb-3">
-              No photos yet
+              No memories yet
             </h2>
             <p className="text-muted-foreground mb-2">
-              Be the first to share a photo or memory.
-            </p>
-            <p className="text-sm text-muted-foreground mb-6">
-              Only approved submissions appear here. Approve them in the Admin area to show them on this page.
+              Be the first to share a memory, with or without photos.
             </p>
             <Link to="/add" className="btn-memorial">
               Share the first memory
             </Link>
           </div>
+        ) : (
+          <>
+            {hasPhotos && (
+              <div
+                className="columns-2 sm:columns-3 lg:columns-4 gap-4 collage-masonry"
+                role="list"
+                aria-label="Photo collage from shared memories"
+              >
+                {collagePhotos.map((photo) => (
+                  <div
+                    key={photo.id}
+                    className="break-inside-avoid mb-4 rounded-lg overflow-hidden bg-muted/50 shadow-sm hover:shadow-md transition-shadow"
+                    role="listitem"
+                  >
+                    {photo.media_type === "video" ? (
+                      <div
+                        className="aspect-video w-full cursor-pointer"
+                        onClick={() => setSelectedPhoto(photo)}
+                        onKeyDown={(e) => e.key === "Enter" && setSelectedPhoto(photo)}
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Expand video"
+                      >
+                        <video
+                          src={getPhotoUrl(photo.storage_path)}
+                          className="w-full h-full object-cover pointer-events-none"
+                          playsInline
+                          preload="metadata"
+                        />
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="w-full text-left focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-t-lg overflow-hidden"
+                        onClick={() => setSelectedPhoto(photo)}
+                        aria-label="Expand photo to view larger"
+                      >
+                        <img
+                          src={getPhotoUrl(photo.storage_path)}
+                          alt={photo.caption || "Memory photo"}
+                          className="w-full h-auto block cursor-zoom-in"
+                          loading="lazy"
+                        />
+                      </button>
+                    )}
+                    {(photo.caption || photo.submission_title) && (
+                      <div className="p-2 sm:p-3 bg-card/80">
+                        {photo.caption && (
+                          <p className="text-sm text-foreground/90">{photo.caption}</p>
+                        )}
+                        {photo.submission_title && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            From: {photo.submission_title}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {hasSubmissions && (
+              <section className="mt-12 space-y-6">
+                <div className="mb-2">
+                  <h2 className="font-serif text-2xl text-foreground mb-1">
+                    Stories behind these photos
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Read the memories that family and friends have shared, together with their photos.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  {submissions!.map((submission) => (
+                    <article
+                      key={submission.id}
+                      className="memorial-card p-6 sm:p-8"
+                    >
+                      <header className="mb-4">
+                        <h3 className="font-serif text-xl sm:text-2xl text-foreground mb-2">
+                          {submission.title}
+                        </h3>
+                      </header>
+
+                      <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap mb-6">
+                        {submission.body}
+                      </p>
+
+                      {submission.photos && submission.photos.length > 0 && (
+                        <div
+                          className={`grid gap-3 ${
+                            submission.photos.length === 1
+                              ? "grid-cols-1"
+                              : submission.photos.length === 2
+                              ? "grid-cols-2"
+                              : "grid-cols-2 sm:grid-cols-3"
+                          }`}
+                        >
+                          {submission.photos
+                            .slice()
+                            .sort((a, b) => a.order_index - b.order_index)
+                            .map((photo: any) => (
+                              <div key={photo.id} className="photo-frame">
+                                <div className="aspect-square">
+                                  {photo.media_type === "video" ? (
+                                    <video
+                                      src={getPhotoUrl(photo.storage_path)}
+                                      className="w-full h-full object-cover"
+                                      controls
+                                      playsInline
+                                    />
+                                  ) : (
+                                    <img
+                                      src={getPhotoUrl(photo.storage_path)}
+                                      alt={photo.caption || "Memory photo"}
+                                      className="w-full h-full object-cover"
+                                      loading="lazy"
+                                    />
+                                  )}
+                                </div>
+                                {photo.caption && (
+                                  <p className="p-2 text-xs text-muted-foreground text-center">
+                                    {photo.caption}
+                                  </p>
+                                )}
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
         )}
       </main>
 
