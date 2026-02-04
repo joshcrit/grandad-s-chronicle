@@ -242,56 +242,23 @@ const Gallery = () => {
                       className="memorial-card p-6 sm:p-8"
                     >
                       <header className="mb-4">
-                        <h3 className="font-serif text-xl sm:text-2xl text-foreground mb-2">
+                        <h3 className="font-serif text-xl sm:text-2xl text-foreground mb-1">
                           {submission.title}
                         </h3>
+                        {(submission.contributor_name || submission.contributor_relationship) && (
+                          <p className="text-sm text-muted-foreground">
+                            {submission.contributor_name && (
+                              <span className="font-medium">{submission.contributor_name}</span>
+                            )}
+                            {submission.contributor_name && submission.contributor_relationship && " · "}
+                            {submission.contributor_relationship && <span>{submission.contributor_relationship}</span>}
+                          </p>
+                        )}
                       </header>
 
-                      <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap mb-6">
+                      <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap">
                         {submission.body}
                       </p>
-
-                      {submission.photos && submission.photos.length > 0 && (
-                        <div
-                          className={`grid gap-3 ${
-                            submission.photos.length === 1
-                              ? "grid-cols-1"
-                              : submission.photos.length === 2
-                              ? "grid-cols-2"
-                              : "grid-cols-2 sm:grid-cols-3"
-                          }`}
-                        >
-                          {submission.photos
-                            .slice()
-                            .sort((a, b) => a.order_index - b.order_index)
-                            .map((photo: any) => (
-                              <div key={photo.id} className="photo-frame">
-                                <div className="aspect-square">
-                                  {photo.media_type === "video" ? (
-                                    <video
-                                      src={getPhotoUrl(photo.storage_path)}
-                                      className="w-full h-full object-cover"
-                                      controls
-                                      playsInline
-                                    />
-                                  ) : (
-                                    <img
-                                      src={getPhotoUrl(photo.storage_path)}
-                                      alt={photo.caption || "Memory photo"}
-                                      className="w-full h-full object-cover"
-                                      loading="lazy"
-                                    />
-                                  )}
-                                </div>
-                                {photo.caption && (
-                                  <p className="p-2 text-xs text-muted-foreground text-center">
-                                    {photo.caption}
-                                  </p>
-                                )}
-                              </div>
-                            ))}
-                        </div>
-                      )}
                     </article>
                   ))}
                 </div>
